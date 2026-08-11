@@ -60,6 +60,7 @@ export const api = {
 
   // Attendance
   checkIn: (token, input) => request('/api/attendance/checkin', { method: 'POST', body: input, token }),
+  checkOut: (token, input) => request('/api/attendance/checkout', { method: 'POST', body: input, token }),
   requestLeave: (token, input) =>
     request('/api/attendance/leave-request', { method: 'POST', body: input, token }),
   decideLeave: (token, id, decision) =>

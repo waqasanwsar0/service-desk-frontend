@@ -43,6 +43,21 @@ export default function Attendance() {
     }
   }
 
+  async function checkOut() {
+    setBanner(null);
+    try {
+      await api.checkOut(token, { engineer_id: engineerId });
+      setBanner({ type: 'info', text: 'Checked out — have a good one.' });
+      load(engineerId);
+    } catch (e) {
+      setBanner({ type: 'error', text: e.message });
+    }
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const todayRecord = records.find((r) => r.date === today);
+  const canCheckOut = todayRecord && !todayRecord.check_out_at;
+
   async function decide(leaveId, decision) {
     await api.decideLeave(token, leaveId, decision);
     load(engineerId);
@@ -56,7 +71,11 @@ export default function Attendance() {
         CAN_ACT.includes(user?.role) && (
           <>
             <button className="btn btn-ghost" onClick={() => setShowLeave(true)}>Request leave</button>
-            <button className="btn btn-accent" onClick={checkIn}>I am ON-SITE</button>
+            {canCheckOut ? (
+              <button className="btn btn-primary" onClick={checkOut}>I am OFF-SITE</button>
+            ) : (
+              <button className="btn btn-accent" onClick={checkIn}>I am ON-SITE</button>
+            )}
           </>
         )
       }
@@ -78,13 +97,15 @@ export default function Attendance() {
               <div className="empty-state">No check-ins recorded yet.</div>
             ) : (
               <table>
-                <thead><tr><th>Date</th><th>Status</th><th>Time</th></tr></thead>
+                <thead><tr><th>Date</th><th>Status</th><th>Check-in</th><th>Check-out</th><th>Duration</th></tr></thead>
                 <tbody>
                   {records.map((r) => (
                     <tr key={r.id}>
                       <td>{r.date}</td>
                       <td>{r.status}</td>
                       <td>{new Date(r.check_in_at).toLocaleTimeString()}</td>
+                      <td>{r.check_out_at ? new Date(r.check_out_at).toLocaleTimeString() : '—'}</td>
+                      <td>{formatDuration(r.check_in_at, r.check_out_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -136,6 +157,16 @@ export default function Attendance() {
       )}
     </Layout>
   );
+}
+
+function formatDuration(checkIn, checkOut) {
+  if (!checkOut) return '—';
+  const ms = new Date(checkOut) - new Date(checkIn);
+  if (ms < 0) return '—';
+  const totalMinutes = Math.round(ms / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${minutes}m`;
 }
 
 function LeaveModal({ token, engineerId, onClose, onCreated }) {
