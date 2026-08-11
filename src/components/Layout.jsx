@@ -24,9 +24,9 @@ export default function Layout({ title, subtitle, actions, children }) {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="sidebar-brand-mark">D</div>
+          <div className="sidebar-brand-mark">L</div>
           <div className="sidebar-brand-text">
-            <span className="sidebar-brand-title">Dispatch</span>
+            <span className="sidebar-brand-title">Lemons Edge</span>
             <span className="sidebar-brand-sub">Service Desk</span>
           </div>
         </div>

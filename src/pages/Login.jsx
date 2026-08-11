@@ -43,9 +43,9 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-brand">
-          <div className="sidebar-brand-mark">D</div>
+          <div className="sidebar-brand-mark">L</div>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>Dispatch</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>Lemons Edge</div>
             <div style={{ fontSize: 11, color: 'var(--ink-soft)' }}>Service Desk</div>
           </div>
         </div>
