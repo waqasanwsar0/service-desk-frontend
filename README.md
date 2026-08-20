@@ -73,3 +73,4 @@ npm run preview # serve the production build locally
 - Replace the client-only role gating with a proper "access denied" page
   for deep-linked routes.
 - Add pagination once ticket/engineer volumes grow beyond a single page.
+ 
