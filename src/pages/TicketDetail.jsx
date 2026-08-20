@@ -22,6 +22,7 @@ export default function TicketDetail() {
   const [error, setError] = useState('');
   const [showAssign, setShowAssign] = useState(false);
   const [showTimesheet, setShowTimesheet] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const [busy, setBusy] = useState(false);
 
   function load() {
@@ -33,6 +34,16 @@ export default function TicketDetail() {
   }
 
   useEffect(load, [token, id]);
+
+  async function signTimesheet(tsId) {
+    setError('');
+    try {
+      await api.signTimesheet(token, tsId);
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
 
   async function advance() {
     if (!ticket) return;
@@ -116,6 +127,22 @@ export default function TicketDetail() {
               <div style={{ color: 'var(--ink-soft)', fontSize: 13.5 }}>{ticket.description}</div>
             </>
           )}
+          <div className="divider" />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase' }}>Photos</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => setShowImage(true)}>+ Add photo</button>
+          </div>
+          {(ticket.image_urls || []).length === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--ink-faint)' }}>No photos attached yet.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {ticket.image_urls.map((url, i) => (
+                <a key={i} href={url} target="_blank" rel="noreferrer">
+                  <img src={url} alt={`Ticket photo ${i + 1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="card card-pad">
@@ -131,9 +158,15 @@ export default function TicketDetail() {
             timesheets.map((ts) => (
               <div key={ts.id} className="note" style={{ borderLeftColor: 'var(--status-timesheet)' }}>
                 <div className="note-meta">{ts.id} · {ts.job_type}</div>
-                <div style={{ fontSize: 13 }}>
-                  {ts.status}
-                  {ts.status === 'Approved' && <> — {ts.billed_amount} {ts.currency}</>}
+                <div style={{ fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    {ts.status}
+                    {ts.status === 'Approved' && <> — {ts.billed_amount} {ts.currency}</>}
+                    {ts.signed_by_engineer && <span style={{ color: 'var(--status-paid)', marginLeft: 6 }}>✓ Signed</span>}
+                  </span>
+                  {!ts.signed_by_engineer && user?.role === 'engineer' && (
+                    <button className="btn btn-ghost btn-sm" onClick={() => signTimesheet(ts.id)}>Sign</button>
+                  )}
                 </div>
               </div>
             ))
@@ -190,7 +223,52 @@ export default function TicketDetail() {
           onCreated={() => { setShowTimesheet(false); load(); }}
         />
       )}
+
+      {showImage && (
+        <ImageModal
+          token={token}
+          ticket={ticket}
+          onClose={() => setShowImage(false)}
+          onAdded={() => { setShowImage(false); load(); }}
+        />
+      )}
     </Layout>
+  );
+}
+
+function ImageModal({ token, ticket, onClose, onAdded }) {
+  const [url, setUrl] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+    try {
+      await api.addTicketImage(token, ticket.id, url);
+      onAdded();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title="Add photo" onClose={onClose}>
+      {error && <div className="banner banner-error">{error}</div>}
+      <form onSubmit={submit}>
+        <div className="field">
+          <label>Image URL</label>
+          <input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
+          <span className="field-hint">Paste a link to a photo — direct file upload isn't wired up yet.</span>
+        </div>
+        <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
+          {busy ? 'Adding…' : 'Add photo'}
+        </button>
+      </form>
+    </Modal>
   );
 }
 

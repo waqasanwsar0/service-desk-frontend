@@ -3,13 +3,20 @@ import { useAuth } from '../context/AuthContext';
 
 const NAV_ITEMS = [
   { to: '/', icon: '◆', label: 'Overview', section: 'Dispatch' },
+  { to: '/projects', icon: '▦', label: 'Projects', section: 'Dispatch' },
   { to: '/tickets', icon: '☰', label: 'Tickets', section: 'Dispatch' },
   { to: '/engineers', icon: '◎', label: 'Engineers', section: 'Dispatch' },
+  { to: '/requirements', icon: '⎘', label: 'Requirements', section: 'Dispatch' },
   { to: '/attendance', icon: '✓', label: 'Attendance', section: 'Field' },
   { to: '/timesheets', icon: '▤', label: 'Timesheets', section: 'Billing', roles: ['service_desk', 'admin', 'accounts'] },
   { to: '/invoices', icon: '$', label: 'Invoices', section: 'Billing', roles: ['admin', 'accounts'] },
   { to: '/contracts', icon: '§', label: 'Contracts', section: 'Billing', roles: ['admin', 'accounts'] },
+  { to: '/salaries', icon: '¤', label: 'Salaries', section: 'Billing', roles: ['admin', 'accounts'] },
   { to: '/applicants', icon: '☺', label: 'Applicants', section: 'Recruitment', roles: ['recruiter', 'admin'] },
+  { to: '/outreach', icon: '↗', label: 'Outreach', section: 'Recruitment', roles: ['recruiter', 'admin'] },
+  { to: '/leads', icon: '◇', label: 'Sales CRM', section: 'Recruitment', roles: ['recruiter', 'admin'] },
+  { to: '/social-tasks', icon: '❖', label: 'Social Media', section: 'Marketing' },
+  { to: '/admin', icon: '⚙', label: 'Admin', section: 'System', roles: ['admin'] },
 ];
 
 export default function Layout({ title, subtitle, actions, children }) {

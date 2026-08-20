@@ -10,6 +10,13 @@ import Timesheets from './pages/Timesheets';
 import Invoices from './pages/Invoices';
 import Contracts from './pages/Contracts';
 import Applicants from './pages/Applicants';
+import Outreach from './pages/Outreach';
+import Admin from './pages/Admin';
+import Projects from './pages/Projects';
+import Requirements from './pages/Requirements';
+import Leads from './pages/Leads';
+import SocialTasks from './pages/SocialTasks';
+import Salaries from './pages/Salaries';
 
 function Protected({ children }) {
   const { token, loading } = useAuth();
@@ -33,6 +40,13 @@ export default function App() {
           <Route path="/invoices" element={<Protected><Invoices /></Protected>} />
           <Route path="/contracts" element={<Protected><Contracts /></Protected>} />
           <Route path="/applicants" element={<Protected><Applicants /></Protected>} />
+          <Route path="/outreach" element={<Protected><Outreach /></Protected>} />
+          <Route path="/admin" element={<Protected><Admin /></Protected>} />
+          <Route path="/projects" element={<Protected><Projects /></Protected>} />
+          <Route path="/requirements" element={<Protected><Requirements /></Protected>} />
+          <Route path="/leads" element={<Protected><Leads /></Protected>} />
+          <Route path="/social-tasks" element={<Protected><SocialTasks /></Protected>} />
+          <Route path="/salaries" element={<Protected><Salaries /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

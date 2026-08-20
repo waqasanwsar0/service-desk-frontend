@@ -110,6 +110,9 @@ export const api = {
   getRecruitmentDashboard: (token) => request('/api/applicants/dashboard', { token }),
   getRecruiterPerformance: (token) => request('/api/recruiters/performance', { token }),
 
+  // Admin — database backup
+  getBackupStatus: (token) => request('/api/admin/backup/status', { token }),
+
   // Applicants (ATS)
   listApplicants: (token, params = {}) => request(`/api/applicants${qs(params)}`, { token }),
   createApplicant: (token, input) => request('/api/applicants', { method: 'POST', body: input, token }),
@@ -117,6 +120,53 @@ export const api = {
     request(`/api/applicants/${id}/stage`, { method: 'PATCH', body: { stage }, token }),
   addApplicantNote: (token, id, text) =>
     request(`/api/applicants/${id}/notes`, { method: 'POST', body: { text }, token }),
+
+  // LinkedIn / manual outreach tracking
+  listOutreach: (token, params = {}) => request(`/api/outreach${qs(params)}`, { token }),
+  createOutreach: (token, input) => request('/api/outreach', { method: 'POST', body: input, token }),
+  updateOutreachStatus: (token, id, status) =>
+    request(`/api/outreach/${id}/status`, { method: 'PATCH', body: { status }, token }),
+  addOutreachNote: (token, id, text) =>
+    request(`/api/outreach/${id}/notes`, { method: 'POST', body: { text }, token }),
+
+  // Projects
+  listProjects: (token, params = {}) => request(`/api/projects${qs(params)}`, { token }),
+  createProject: (token, input) => request('/api/projects', { method: 'POST', body: input, token }),
+
+  // Dispatches (auto-generates a ticket)
+  listDispatches: (token) => request('/api/dispatches', { token }),
+  createDispatch: (token, input) => request('/api/dispatches', { method: 'POST', body: input, token }),
+
+  // Ticket images
+  addTicketImage: (token, ticketId, imageUrl) =>
+    request(`/api/tickets/${ticketId}/images`, { method: 'POST', body: { image_url: imageUrl }, token }),
+
+  // Timesheet FTE sign-off
+  signTimesheet: (token, id) => request(`/api/timesheets/${id}/sign`, { method: 'PATCH', token }),
+
+  // Client requirements
+  listRequirements: (token, params = {}) => request(`/api/requirements${qs(params)}`, { token }),
+  createRequirement: (token, input) => request('/api/requirements', { method: 'POST', body: input, token }),
+
+  // Sales CRM (leads)
+  listLeads: (token, params = {}) => request(`/api/leads${qs(params)}`, { token }),
+  createLead: (token, input) => request('/api/leads', { method: 'POST', body: input, token }),
+  updateLeadStatus: (token, id, status) => request(`/api/leads/${id}/status`, { method: 'PATCH', body: { status }, token }),
+  addLeadNote: (token, id, text) => request(`/api/leads/${id}/notes`, { method: 'POST', body: { text }, token }),
+  getLeadsReport: (token) => request('/api/leads/report', { token }),
+
+  // Social media task management
+  listSocialTasks: (token, params = {}) => request(`/api/social-tasks${qs(params)}`, { token }),
+  createSocialTask: (token, input) => request('/api/social-tasks', { method: 'POST', body: input, token }),
+  updateSocialTaskStatus: (token, id, status) =>
+    request(`/api/social-tasks/${id}/status`, { method: 'PATCH', body: { status }, token }),
+  addSocialTaskNote: (token, id, text) => request(`/api/social-tasks/${id}/notes`, { method: 'POST', body: { text }, token }),
+  getSocialTaskDashboard: (token) => request('/api/social-tasks/dashboard', { token }),
+
+  // Employee salary management
+  listSalaries: (token, params = {}) => request(`/api/salaries${qs(params)}`, { token }),
+  createSalary: (token, input) => request('/api/salaries', { method: 'POST', body: input, token }),
+  markSalaryPaid: (token, id) => request(`/api/salaries/${id}/paid`, { method: 'PATCH', token }),
 };
 
 function qs(params) {
@@ -126,3 +176,29 @@ function qs(params) {
 }
 
 export { ApiError };
+
+// Downloads the full database backup as a file. Doesn't go through the
+// standard request() helper since the response is a file, not JSON —
+// fetches with the auth header, then triggers a normal browser download.
+export async function downloadBackup(token) {
+  const res = await fetch(`${BASE_URL}/api/admin/backup`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new ApiError(data?.error || `Backup download failed (${res.status})`, res.status);
+  }
+  const blob = await res.blob();
+  const disposition = res.headers.get('Content-Disposition') || '';
+  const match = disposition.match(/filename=([^;]+)/);
+  const filename = match ? match[1].trim() : 'servicedesk-backup.json';
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}

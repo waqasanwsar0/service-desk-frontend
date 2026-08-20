@@ -223,7 +223,8 @@ function AddAssignmentModal({ token, engineer, onClose, onCreated }) {
 
 function CreateEngineerModal({ token, onClose, onCreated }) {
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', location: '', skills: '', hourly_rate: '', day_rate: '', currency: 'EUR',
+    name: '', email: '', phone: '', location: '', skills: '', hourly_rate: '', half_day_rate: '', day_rate: '', currency: 'EUR',
+    travel_cost: '', resume_url: '', area_coverage: '',
   });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -241,8 +242,12 @@ function CreateEngineerModal({ token, onClose, onCreated }) {
         location: form.location,
         skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
         hourly_rate: form.hourly_rate ? Number(form.hourly_rate) : 0,
+        half_day_rate: form.half_day_rate ? Number(form.half_day_rate) : 0,
         day_rate: form.day_rate ? Number(form.day_rate) : 0,
         currency: form.currency,
+        travel_cost: form.travel_cost ? Number(form.travel_cost) : 0,
+        resume_url: form.resume_url,
+        area_coverage: form.area_coverage.split(',').map((s) => s.trim()).filter(Boolean),
       });
       onCreated();
     } catch (err) {
@@ -268,15 +273,27 @@ function CreateEngineerModal({ token, onClose, onCreated }) {
           <label>Skills (comma separated)</label>
           <input value={form.skills} onChange={set('skills')} placeholder="Windows, Networking, POS" />
         </div>
+        <div className="field">
+          <label>Area coverage (comma separated cities)</label>
+          <input value={form.area_coverage} onChange={set('area_coverage')} placeholder="Berlin, Munich, Hamburg" />
+        </div>
         <div className="field-row">
           <div className="field"><label>Hourly rate</label><input type="number" value={form.hourly_rate} onChange={set('hourly_rate')} /></div>
+          <div className="field"><label>Half-day rate</label><input type="number" value={form.half_day_rate} onChange={set('half_day_rate')} /></div>
+        </div>
+        <div className="field-row">
           <div className="field"><label>Day rate</label><input type="number" value={form.day_rate} onChange={set('day_rate')} /></div>
+          <div className="field"><label>Travel cost</label><input type="number" value={form.travel_cost} onChange={set('travel_cost')} /></div>
         </div>
         <div className="field">
           <label>Currency</label>
           <select value={form.currency} onChange={set('currency')}>
             <option>EUR</option><option>GBP</option><option>USD</option><option>PKR</option>
           </select>
+        </div>
+        <div className="field">
+          <label>Resume URL</label>
+          <input value={form.resume_url} onChange={set('resume_url')} placeholder="https://…" />
         </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
           {busy ? 'Adding…' : 'Add engineer'}
