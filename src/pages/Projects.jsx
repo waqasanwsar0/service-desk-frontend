@@ -16,7 +16,7 @@ export default function Projects() {
 
   function load() {
     setLoading(true);
-    api.listProjects(token).then((res) => setProjects(res || [])).finally(() => setLoading(false));
+    api.listProjects(token).then((res) => setProjects(res.projects || [])).finally(() => setLoading(false));
     api.listEngineers(token, { available_only: 'true' }).then((res) => setEngineers(res.engineers || []));
   }
   useEffect(load, [token]);
