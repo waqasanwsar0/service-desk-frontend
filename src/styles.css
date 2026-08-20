@@ -106,6 +106,7 @@ code, .mono { font-family: var(--font-mono); }
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar-brand {
@@ -134,7 +135,20 @@ code, .mono { font-family: var(--font-mono); }
 .sidebar-brand-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: white; }
 .sidebar-brand-sub { font-size: 11px; color: var(--sidebar-ink-dim); letter-spacing: 0.04em; text-transform: uppercase; }
 
-.sidebar-nav { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* thin, unobtrusive scrollbar so a long nav list doesn't look broken */
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-line) transparent;
+}
+.sidebar-nav::-webkit-scrollbar { width: 6px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: var(--sidebar-line); border-radius: 3px; }
 
 .sidebar-section-label {
   font-size: 11px;
