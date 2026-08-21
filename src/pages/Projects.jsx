@@ -189,6 +189,7 @@ function CreateProjectModal({ token, onClose, onCreated }) {
           <select value={form.type} onChange={set('type')}>
             <option value="Dispatch">Dispatch</option>
             <option value="FTE">FTE</option>
+            <option value="Rollout">Rollout</option>
           </select>
         </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
