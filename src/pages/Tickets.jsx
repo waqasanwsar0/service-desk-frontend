@@ -156,7 +156,7 @@ function CreateTicketModal({ token, onClose, onCreated }) {
             <select value={form.project_type} onChange={set('project_type')}>
               <option value="Dispatch">Dispatch</option>
               <option value="FTE">FTE</option>
-              <option value="FTE">Rollout</option>
+              <option value="Rollout">Rollout</option>
             </select>
           </div>
         </div>
