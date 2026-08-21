@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import FileUpload from '../components/FileUpload';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { api, fileUrl } from '../api/client';
 
 const STATUSES = ['Draft', 'In Review', 'Approved', 'Posted'];
 const STATUS_COLORS = {
@@ -102,7 +103,11 @@ function CreateTaskModal({ token, onClose, onCreated }) {
           <div className="field"><label>Due date</label><input type="date" value={form.due_date} onChange={set('due_date')} /></div>
         </div>
         <div className="field"><label>Description</label><textarea rows={2} value={form.description} onChange={set('description')} /></div>
-        <div className="field"><label>Asset URL</label><input value={form.asset_url} onChange={set('asset_url')} placeholder="https://…" /></div>
+        <div className="field">
+          <label>Asset</label>
+          <FileUpload label="Upload image/video" onUploaded={(url) => setForm((f) => ({ ...f, asset_url: fileUrl(url) }))} />
+          <input style={{ marginTop: 6 }} value={form.asset_url} onChange={set('asset_url')} placeholder="Or paste a URL…" />
+        </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
           {busy ? 'Adding…' : 'Add task'}
         </button>
@@ -148,7 +153,7 @@ function TaskDetailModal({ token, task, onClose, onUpdated }) {
       </div>
       {task.description && <div style={{ fontSize: 13.5, marginBottom: 12 }}>{task.description}</div>}
       {task.asset_url && (
-        <a href={task.asset_url} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: 'var(--accent)', display: 'block', marginBottom: 12 }}>
+        <a href={fileUrl(task.asset_url)} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: 'var(--accent)', display: 'block', marginBottom: 12 }}>
           View asset
         </a>
       )}

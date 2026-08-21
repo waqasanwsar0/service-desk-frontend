@@ -4,8 +4,9 @@ import Layout from '../components/Layout';
 import SignalRail from '../components/SignalRail';
 import StatusPill from '../components/StatusPill';
 import Modal from '../components/Modal';
+import FileUpload from '../components/FileUpload';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { api, fileUrl } from '../api/client';
 import { NEXT_STAGE, PRIORITY_COLORS, stageColor } from '../lib/stages';
 
 const CAN_ASSIGN = ['service_desk', 'admin'];
@@ -137,8 +138,8 @@ export default function TicketDetail() {
           ) : (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {ticket.image_urls.map((url, i) => (
-                <a key={i} href={url} target="_blank" rel="noreferrer">
-                  <img src={url} alt={`Ticket photo ${i + 1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
+                <a key={i} href={fileUrl(url)} target="_blank" rel="noreferrer">
+                  <img src={fileUrl(url)} alt={`Ticket photo ${i + 1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
                 </a>
               ))}
             </div>
@@ -258,9 +259,13 @@ function ImageModal({ token, ticket, onClose, onAdded }) {
   return (
     <Modal title="Add photo" onClose={onClose}>
       {error && <div className="banner banner-error">{error}</div>}
+      <div className="field">
+        <FileUpload label="Upload from device" accept="image/*" onUploaded={(uploadedUrl) => setUrl(fileUrl(uploadedUrl))} />
+      </div>
+      <div className="divider" />
       <form onSubmit={submit}>
         <div className="field">
-          <label>Image URL</label>
+          <label>Or paste an image URL</label>
           <input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
           <span className="field-hint">Paste a link to a photo — direct file upload isn't wired up yet.</span>
         </div>
@@ -436,8 +441,9 @@ function TimesheetModal({ token, ticket, onClose, onCreated }) {
           </div>
         </div>
         <div className="field">
-          <label>File URL (PDF/JPG)</label>
-          <input value={form.file_url} onChange={set('file_url')} placeholder="https://…" />
+          <label>Timesheet proof</label>
+          <FileUpload label="Upload PDF/photo" accept="application/pdf,image/*" onUploaded={(url) => setForm((f) => ({ ...f, file_url: fileUrl(url) }))} />
+          <input style={{ marginTop: 6 }} value={form.file_url} onChange={set('file_url')} placeholder="Or paste a URL…" />
         </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
           {busy ? 'Uploading…' : 'Upload timesheet'}

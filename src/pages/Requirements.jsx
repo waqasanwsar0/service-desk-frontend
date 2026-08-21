@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import FileUpload from '../components/FileUpload';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { api, fileUrl } from '../api/client';
 
 export default function Requirements() {
   const { token } = useAuth();
@@ -43,7 +44,7 @@ export default function Requirements() {
                     <td style={{ textTransform: 'capitalize' }}>{r.source}</td>
                     <td>{new Date(r.created_at).toLocaleDateString()}</td>
                     <td>
-                      {r.file_url && <a href={r.file_url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">View file</a>}
+                      {r.file_url && <a href={fileUrl(r.file_url)} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">View file</a>}
                     </td>
                   </tr>
                 ))}
@@ -89,7 +90,11 @@ function CreateRequirementModal({ token, onClose, onCreated }) {
           <div className="field"><label>Title</label><input required value={form.title} onChange={set('title')} placeholder="Need 5 laptops setup" /></div>
         </div>
         <div className="field"><label>Description</label><textarea rows={3} value={form.description} onChange={set('description')} /></div>
-        <div className="field"><label>File URL</label><input value={form.file_url} onChange={set('file_url')} placeholder="https://…" /></div>
+        <div className="field">
+          <label>File</label>
+          <FileUpload label="Upload file" onUploaded={(url) => setForm((f) => ({ ...f, file_url: fileUrl(url) }))} />
+          <input style={{ marginTop: 6 }} value={form.file_url} onChange={set('file_url')} placeholder="Or paste a URL…" />
+        </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
           {busy ? 'Adding…' : 'Add requirement'}
         </button>

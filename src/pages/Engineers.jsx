@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import FileUpload from '../components/FileUpload';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { api, fileUrl } from '../api/client';
 
 const CAN_CREATE = ['service_desk', 'admin', 'recruiter'];
 
@@ -292,8 +293,9 @@ function CreateEngineerModal({ token, onClose, onCreated }) {
           </select>
         </div>
         <div className="field">
-          <label>Resume URL</label>
-          <input value={form.resume_url} onChange={set('resume_url')} placeholder="https://…" />
+          <label>Resume</label>
+          <FileUpload label="Upload resume" accept="application/pdf,image/*" onUploaded={(url) => setForm((f) => ({ ...f, resume_url: fileUrl(url) }))} />
+          <input style={{ marginTop: 6 }} value={form.resume_url} onChange={set('resume_url')} placeholder="Or paste a URL…" />
         </div>
         <button className="btn btn-accent" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
           {busy ? 'Adding…' : 'Add engineer'}

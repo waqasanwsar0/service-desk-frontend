@@ -177,6 +177,33 @@ function qs(params) {
 
 export { ApiError };
 
+// Uploads a file (image, video, or PDF) and returns {id, filename,
+// content_type, size, url}. Separate from request() since this sends
+// multipart/form-data, not JSON.
+export async function uploadFile(token, file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${BASE_URL}/api/files/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new ApiError(data?.error || `Upload failed (${res.status})`, res.status);
+  }
+  return data;
+}
+
+// Resolves a stored file's relative URL (e.g. "/api/files/FILE-000001")
+// to a full URL the browser can load directly in <img>/<video>/<a> tags.
+export function fileUrl(relativeUrl) {
+  if (!relativeUrl) return relativeUrl;
+  if (relativeUrl.startsWith('http')) return relativeUrl;
+  return `${BASE_URL}${relativeUrl}`;
+}
+
 // Downloads the full database backup as a file. Doesn't go through the
 // standard request() helper since the response is a file, not JSON —
 // fetches with the auth header, then triggers a normal browser download.
