@@ -294,7 +294,8 @@ function CreateEngineerModal({ token, onClose, onCreated }) {
         <div className="field">
           <label>Currency</label>
           <select value={form.currency} onChange={set('currency')}>
-            <option>EUR</option><option>GBP</option><option>USD</option><option>PKR</option>
+            <option>EUR</option><option>GBP</option><option>USD</option><option>PKR</option><option>ali</option>
+            
           </select>
         </div>
         <div className="field">
