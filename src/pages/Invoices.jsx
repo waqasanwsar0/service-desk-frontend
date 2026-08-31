@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import InvoicePdfModal from '../components/InvoicePdfModal';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 
@@ -12,6 +13,9 @@ export default function Invoices() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEntity, setShowEntity] = useState(false);
   const [banner, setBanner] = useState(null);
+  const [payingId, setPayingId] = useState(null);
+  const [notesFor, setNotesFor] = useState(null);
+  const [pdfFor, setPdfFor] = useState(null);
 
   function load() {
     setLoading(true);
@@ -23,9 +27,6 @@ export default function Invoices() {
       .finally(() => setLoading(false));
   }
   useEffect(load, [token]);
-
-  const [payingId, setPayingId] = useState(null);
-  const [notesFor, setNotesFor] = useState(null);
 
   async function send(id) {
     await api.sendInvoice(token, id);
@@ -99,6 +100,7 @@ export default function Invoices() {
                           <button className="btn btn-danger btn-sm" onClick={() => cancel(inv.id)}>Cancel</button>
                         )}
                         <button className="btn btn-ghost btn-sm" onClick={() => setNotesFor(inv.id)}>Notes</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setPdfFor(inv)}>PDF</button>
                       </div>
                     </td>
                   </tr>
@@ -134,6 +136,8 @@ export default function Invoices() {
       {notesFor && (
         <NotesModal token={token} invoiceId={notesFor} onClose={() => setNotesFor(null)} />
       )}
+
+      {pdfFor && <InvoicePdfModal invoice={pdfFor} onClose={() => setPdfFor(null)} />}
     </Layout>
   );
 }

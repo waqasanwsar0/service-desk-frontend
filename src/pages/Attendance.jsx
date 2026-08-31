@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import TimesheetReportModal from '../components/TimesheetReportModal';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 
@@ -14,6 +15,7 @@ export default function Attendance() {
   const [records, setRecords] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [showLeave, setShowLeave] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [banner, setBanner] = useState(null);
 
   useEffect(() => {
@@ -63,21 +65,34 @@ export default function Attendance() {
     load(engineerId);
   }
 
+  function formatDuration(checkIn, checkOut) {
+    if (!checkOut) return '—';
+    const ms = new Date(checkOut) - new Date(checkIn);
+    if (ms < 0) return '—';
+    const totalMinutes = Math.round(ms / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}h ${minutes}m`;
+  }
+
   return (
     <Layout
       title="Attendance"
       subtitle="Portal check-in and leave requests for field engineers."
       actions={
-        CAN_ACT.includes(user?.role) && (
-          <>
-            <button className="btn btn-ghost" onClick={() => setShowLeave(true)}>Request leave</button>
-            {canCheckOut ? (
-              <button className="btn btn-primary" onClick={checkOut}>I am OFF-SITE</button>
-            ) : (
-              <button className="btn btn-accent" onClick={checkIn}>I am ON-SITE</button>
-            )}
-          </>
-        )
+        <>
+          <button className="btn btn-ghost" onClick={() => setShowReport(true)}>Monthly Report</button>
+          {CAN_ACT.includes(user?.role) && (
+            <>
+              <button className="btn btn-ghost" onClick={() => setShowLeave(true)}>Request leave</button>
+              {canCheckOut ? (
+                <button className="btn btn-primary" onClick={checkOut}>I am OFF-SITE</button>
+              ) : (
+                <button className="btn btn-accent" onClick={checkIn}>I am ON-SITE</button>
+              )}
+            </>
+          )}
+        </>
       }
     >
       <div className="field" style={{ maxWidth: 320, marginBottom: 18 }}>
@@ -155,18 +170,10 @@ export default function Attendance() {
           onCreated={() => { setShowLeave(false); load(engineerId); }}
         />
       )}
+
+      {showReport && <TimesheetReportModal engineers={engineers} onClose={() => setShowReport(false)} />}
     </Layout>
   );
-}
-
-function formatDuration(checkIn, checkOut) {
-  if (!checkOut) return '—';
-  const ms = new Date(checkOut) - new Date(checkIn);
-  if (ms < 0) return '—';
-  const totalMinutes = Math.round(ms / 60000);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours}h ${minutes}m`;
 }
 
 function LeaveModal({ token, engineerId, onClose, onCreated }) {

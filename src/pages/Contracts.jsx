@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import ServiceAgreementModal from '../components/ServiceAgreementModal';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 
@@ -12,6 +13,7 @@ export default function Contracts() {
   const [expiringSoon, setExpiringSoon] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [agreementFor, setAgreementFor] = useState(null);
 
   function load() {
     setLoading(true);
@@ -53,7 +55,7 @@ export default function Contracts() {
           ) : (
             <table>
               <thead>
-                <tr><th>ID</th><th>Client</th><th>Scope</th><th>Billing terms</th><th>Start</th><th>Expiry</th><th>Auto-renew</th></tr>
+                <tr><th>ID</th><th>Client</th><th>Scope</th><th>Billing terms</th><th>Start</th><th>Expiry</th><th>Auto-renew</th><th></th></tr>
               </thead>
               <tbody>
                 {contracts.map((c) => (
@@ -65,6 +67,9 @@ export default function Contracts() {
                     <td>{c.start_date}</td>
                     <td>{c.expiry_date}</td>
                     <td>{c.auto_renew ? 'Yes' : 'No'}</td>
+                    <td>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setAgreementFor(c)}>Agreement</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -76,6 +81,8 @@ export default function Contracts() {
       {showCreate && (
         <CreateContractModal token={token} onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); load(); }} />
       )}
+
+      {agreementFor && <ServiceAgreementModal contract={agreementFor} onClose={() => setAgreementFor(null)} />}
     </Layout>
   );
 }

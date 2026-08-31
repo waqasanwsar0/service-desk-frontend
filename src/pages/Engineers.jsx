@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import FileUpload from '../components/FileUpload';
+import ContractorAgreementModal from '../components/ContractorAgreementModal';
 import { useAuth } from '../context/AuthContext';
 import { api, fileUrl } from '../api/client';
 
@@ -14,6 +15,7 @@ export default function Engineers() {
   const [filters, setFilters] = useState({ location: '', skill: '', available_only: '' });
   const [showCreate, setShowCreate] = useState(false);
   const [assignmentsFor, setAssignmentsFor] = useState(null);
+  const [contractFor, setContractFor] = useState(null);
 
   function load() {
     setLoading(true);
@@ -91,6 +93,7 @@ export default function Engineers() {
                           Mark {e.available ? 'unavailable' : 'available'}
                         </button>
                         <button className="btn btn-ghost btn-sm" onClick={() => setAssignmentsFor(e)}>Projects</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setContractFor(e)}>Contract</button>
                       </div>
                     </td>
                   </tr>
@@ -108,6 +111,8 @@ export default function Engineers() {
       {assignmentsFor && (
         <AssignmentsModal token={token} engineer={assignmentsFor} onClose={() => setAssignmentsFor(null)} />
       )}
+
+      {contractFor && <ContractorAgreementModal engineer={contractFor} onClose={() => setContractFor(null)} />}
     </Layout>
   );
 }

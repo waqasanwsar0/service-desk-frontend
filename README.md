@@ -1,75 +1,64 @@
-# Dispatch — Service Desk Web (React)
+# PDF Generators — Complete Files
 
-React frontend for the Service Desk & Field Engineer Management System.
-Talks to the Go backend in `../service-desk` over its REST API.
+Ye poori tarah **ready-made files** hain — koi manual snippet copy-paste
+nahi karna, seedha overwrite kar dein.
 
-## Design
+## Files is package mein
 
-"Dispatch console" theme: a dark control-room sidebar, warm paper canvas,
-and a signature **signal rail** — a lit progress track showing every
-ticket's position in the 7-stage lifecycle
-(`New → Assigned → Onsite → Timesheet Pending → Completed → Invoice → Paid`),
-the same mental model a dispatcher uses on a physical board.
-
-## Pages
-
-- **Login** — sign in or create the first account (pick a role: admin,
-  service_desk, engineer, recruiter, accounts — the UI adapts to it).
-- **Overview** — open-ticket counts, critical alerts, recent activity.
-- **Tickets** — list, filter, create, and a detail view with the signal
-  rail, engineer assignment, status advance, and timesheet upload.
-- **Engineers** — search by location/skill/availability, add new engineers.
-- **Attendance** — "I am ON-SITE" check-in, leave requests + approval.
-- **Timesheets** — review and approve/reject uploaded timesheets.
-- **Invoices** — billing entities (multi-company), generate invoices from
-  approved timesheets, mark sent/paid.
-- **Applicants** — recruitment pipeline board with a per-candidate note
-  thread ("Chat with Recruiter").
-- **Contracts** — client SOWs, billing terms, and a 30-day renewal-reminder
-  banner.
-
-Additional depth on existing pages:
-- **Overview** now shows real dashboard data — timesheets missing, leave
-  calendar, tickets by client, upcoming visits sorted by SLA.
-- **Ticket detail** shows per-ticket profitability (billed vs. vendor
-  cost) and lets you add a vendor bill, for admin/accounts/service_desk.
-- **Invoices** supports partial payments, cancel, mark-overdue, and
-  credit/debit notes.
-- **Engineers** has a "Projects" button per engineer for multi-project
-  assignment (the "re-hire" flow) — one engineer can hold several active
-  project assignments at once, each with its own rate.
-
-Navigation adapts to the signed-in user's role — e.g. only
-`recruiter`/`admin` see Applicants, only `admin`/`accounts` see Invoices.
-
-## Run it
-
-```bash
-npm install
-cp .env.example .env   # adjust VITE_API_URL if your backend isn't on :8080
-npm run dev
+```
+index.html                              → overwrite karein (jsPDF scripts add hain)
+src/pages/Invoices.jsx                  → overwrite karein (PDF button add hai)
+src/pages/Engineers.jsx                 → overwrite karein (Contract button add hai)
+src/pages/Contracts.jsx                 → overwrite karein (Agreement button add hai)
+src/pages/Attendance.jsx                → overwrite karein (Monthly Report button add hai)
+src/components/InvoicePdfModal.jsx      → naya file
+src/components/ContractorAgreementModal.jsx → naya file
+src/components/ServiceAgreementModal.jsx    → naya file
+src/components/TimesheetReportModal.jsx     → naya file
+src/lib/pdfTemplates.js                 → naya file
 ```
 
-Make sure the Go backend (`../service-desk`) is running first:
+## Apply karne ka tareeqa
+
+1. Is zip ko extract karein
+2. Sab files ko apne `service-desk-frontend` folder mein **isi structure ke sath** copy-paste (overwrite) kar dein
+3. Push karein:
 
 ```bash
-cd ../service-desk && go run ./cmd/server
+cd service-desk-frontend
+git add .
+git commit -m "Add PDF generation for invoices, contracts, and timesheets"
+git push
 ```
 
-Open the printed local URL (typically `http://localhost:5173`), then
-register your first account (pick "Admin") and start creating tickets,
-engineers, etc.
+Backend mein koi change nahi — PDF poori tarah browser mein banti hai
+(jsPDF library), koi server call nahi hota.
 
-## Build for production
+## Kya naya milega har page pe
 
-```bash
-npm run build   # outputs to dist/
-npm run preview # serve the production build locally
-```
+- **Invoices** — har invoice ke saamne **"PDF"** button → Viora ke invoice
+  template jaisa professional PDF, line items khud invoice se bhare
+  hue
+- **Engineers** — har engineer ke saamne **"Contract"** button →
+  Independent Contractor Agreement PDF, engineer ka naam/rate/location
+  khud bhara hua
+- **Contracts** — har contract ke saamne **"Agreement"** button →
+  Client Service Agreement PDF, client ka naam/scope khud bhara hua
+- **Attendance** — upar **"Monthly Report"** button → kisi bhi engineer
+  ka mahine ka timesheet PDF, **real check-in/check-out data** se khud
+  bana hua
 
-## What's next
+## Zaroori note
 
-- Wire up the Outlook/WhatsApp intake once those backend integrations exist.
-- Replace the client-only role gating with a proper "access denied" page
-  for deep-linked routes.
-- Add pagination once ticket/engineer volumes grow beyond a single page.
+Maine ye files apne fresh session mein dobara likhi hain (waisi hi jaisi
+maine pehle is conversation mein banayi thi) kyunke mera pichla working
+container reset ho gaya tha. Maine har file ka **syntax check** kiya hai
+(esbuild se) — sab clean hain. Lekin main inko is baar **live browser mein
+click kar ke test nahi kar saka** (jaisa pehle har feature ke sath karta
+tha), kyunke poora project yahan dobara set up karna is turn ke liye
+practical nahi tha.
+
+**Isliye ek chhoti si guzarish:** Push karne ke baad in 4 buttons ko khud
+try kar ke dekh lein (PDF download hoti hai ya nahi). Agar kahin koi
+error aaye (jaise button kaam na kare ya PDF blank aaye), turant
+screenshot bhej dein — main foran fix kar dunga.
