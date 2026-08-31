@@ -63,7 +63,7 @@ export default function Engineers() {
             <table>
               <thead>
                 <tr>
-                  <th>ID</th><th>nwaqas</th><th>Location</th><th>Skills</th><th>Rate</th><th>Status</th><th></th>
+                  <th>ID</th><th>waqas</th><th>Location</th><th>Skills</th><th>Rate</th><th>Status</th><th></th>
                 </tr>
               </thead>
               <tbody>
